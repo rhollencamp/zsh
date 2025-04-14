@@ -1,3 +1,4 @@
 title: ZSH
 description: Blog for development of Zombie Survival Horror
 theme: jekyll-theme-hacker
+baseurl: /zsh/

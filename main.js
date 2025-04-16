@@ -24,8 +24,8 @@ init();
 
 function init() {
 
-  camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 20000);
-  camera.position.y = getY(worldHalfWidth, worldHalfDepth) * 100 + 100;
+  camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight);
+  camera.position.y = getY(worldHalfWidth, worldHalfDepth) + 1;
 
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0xbfd1e5);
@@ -34,34 +34,34 @@ function init() {
 
   const matrix = new THREE.Matrix4();
 
-  const pxGeometry = new THREE.PlaneGeometry(100, 100);
+  const pxGeometry = new THREE.PlaneGeometry(1, 1);
   pxGeometry.attributes.uv.array[1] = 0.5;
   pxGeometry.attributes.uv.array[3] = 0.5;
   pxGeometry.rotateY(Math.PI / 2);
-  pxGeometry.translate(50, 0, 0);
+  pxGeometry.translate(0.5, 0, 0);
 
-  const nxGeometry = new THREE.PlaneGeometry(100, 100);
+  const nxGeometry = new THREE.PlaneGeometry(1, 1);
   nxGeometry.attributes.uv.array[1] = 0.5;
   nxGeometry.attributes.uv.array[3] = 0.5;
   nxGeometry.rotateY(- Math.PI / 2);
-  nxGeometry.translate(- 50, 0, 0);
+  nxGeometry.translate(- 0.5, 0, 0);
 
-  const pyGeometry = new THREE.PlaneGeometry(100, 100);
+  const pyGeometry = new THREE.PlaneGeometry(1, 1);
   pyGeometry.attributes.uv.array[5] = 0.5;
   pyGeometry.attributes.uv.array[7] = 0.5;
   pyGeometry.rotateX(- Math.PI / 2);
-  pyGeometry.translate(0, 50, 0);
+  pyGeometry.translate(0, 0.5, 0);
 
-  const pzGeometry = new THREE.PlaneGeometry(100, 100);
+  const pzGeometry = new THREE.PlaneGeometry(1, 1);
   pzGeometry.attributes.uv.array[1] = 0.5;
   pzGeometry.attributes.uv.array[3] = 0.5;
-  pzGeometry.translate(0, 0, 50);
+  pzGeometry.translate(0, 0, 0.5);
 
-  const nzGeometry = new THREE.PlaneGeometry(100, 100);
+  const nzGeometry = new THREE.PlaneGeometry(1, 1);
   nzGeometry.attributes.uv.array[1] = 0.5;
   nzGeometry.attributes.uv.array[3] = 0.5;
   nzGeometry.rotateY(Math.PI);
-  nzGeometry.translate(0, 0, - 50);
+  nzGeometry.translate(0, 0, - 0.5);
 
   const geometries = [];
 
@@ -72,9 +72,9 @@ function init() {
       const h = getY(x, z);
 
       matrix.makeTranslation(
-        x * 100 - worldHalfWidth * 100,
-        h * 100,
-        z * 100 - worldHalfDepth * 100
+        x - worldHalfWidth,
+        h,
+        z - worldHalfDepth
       );
 
       const px = getY(x + 1, z);
@@ -275,16 +275,16 @@ function render() {
     velocity.x -= velocity.x * 10.0 * delta;
     velocity.z -= velocity.z * 10.0 * delta;
     velocity.y -= 9.8 * 100.0 * delta; // gravity
-    if (moveForward) velocity.z -= 400.0 * delta;
-    if (moveBackward) velocity.z += 400.0 * delta;
-    if (moveLeft) velocity.x -= 400.0 * delta;
-    if (moveRight) velocity.x += 400.0 * delta;
+    if (moveForward) velocity.z -= 100.0 * delta;
+    if (moveBackward) velocity.z += 100.0 * delta;
+    if (moveLeft) velocity.x -= 100.0 * delta;
+    if (moveRight) velocity.x += 100.0 * delta;
     controls.moveRight(-velocity.x * delta);
     controls.moveForward(-velocity.z * delta);
     camera.position.y += velocity.y * delta;
-    if (camera.position.y < getY(worldHalfWidth, worldHalfDepth) * 100 + 100) {
+    if (camera.position.y < getY(worldHalfWidth, worldHalfDepth) + 1) {
       velocity.y = 0;
-      camera.position.y = getY(worldHalfWidth, worldHalfDepth) * 100 + 100;
+      camera.position.y = getY(worldHalfWidth, worldHalfDepth) + 1;
       canJump = true;
     }
   }

@@ -2,13 +2,16 @@ import * as THREE from 'three';
 
 import Stats from 'three/addons/libs/stats.module.js';
 
-import { FirstPersonControls } from 'three/addons/controls/FirstPersonControls.js';
+import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 import { ImprovedNoise } from 'three/addons/math/ImprovedNoise.js';
 import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
 
 let stats;
 
 let camera, controls, scene, renderer;
+let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false, canJump = false;
+let velocity = new THREE.Vector3();
+let direction = new THREE.Vector3();
 
 const worldWidth = 128, worldDepth = 128;
 const worldHalfWidth = worldWidth / 2;
@@ -59,8 +62,6 @@ function init() {
   nzGeometry.attributes.uv.array[3] = 0.5;
   nzGeometry.rotateY(Math.PI);
   nzGeometry.translate(0, 0, - 50);
-
-  //
 
   const geometries = [];
 
@@ -134,30 +135,51 @@ function init() {
   renderer.setAnimationLoop(animate);
   document.body.appendChild(renderer.domElement);
 
-  controls = new FirstPersonControls(camera, renderer.domElement);
+  controls = new PointerLockControls(camera, renderer.domElement);
+  scene.add(controls.getObject());
 
-  controls.movementSpeed = 1000;
-  controls.lookSpeed = 0.125;
-  controls.lookVertical = true;
+  // UI blocker for pointer lock
+  const blocker = document.createElement('div');
+  blocker.id = 'blocker';
+  blocker.style.position = 'absolute';
+  blocker.style.top = '0';
+  blocker.style.left = '0';
+  blocker.style.width = '100vw';
+  blocker.style.height = '100vh';
+  blocker.style.backgroundColor = 'rgba(0,0,0,0.5)';
+  blocker.style.display = 'flex';
+  blocker.style.alignItems = 'center';
+  blocker.style.justifyContent = 'center';
+  blocker.style.zIndex = '100';
+  blocker.innerHTML = '<div style="color:white;font-size:2em;">Click to play</div>';
+  document.body.appendChild(blocker);
+
+  blocker.addEventListener('click', function () {
+    controls.lock();
+  });
+
+  controls.addEventListener('lock', function () {
+    blocker.style.display = 'none';
+  });
+
+  controls.addEventListener('unlock', function () {
+    blocker.style.display = 'flex';
+  });
+
+  document.addEventListener('keydown', onKeyDown);
+  document.addEventListener('keyup', onKeyUp);
 
   stats = new Stats();
   document.body.appendChild(stats.dom);
-
-  //
 
   window.addEventListener('resize', onWindowResize);
 
 }
 
 function onWindowResize() {
-
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
-
   renderer.setSize(window.innerWidth, window.innerHeight);
-
-  controls.handleResize();
-
 }
 
 function generateHeight(width, height) {
@@ -194,15 +216,77 @@ function getY(x, z) {
 }
 
 function animate() {
-
   render();
   stats.update();
+}
 
+function onKeyDown(event) {
+  switch (event.code) {
+    case 'ArrowUp':
+    case 'KeyW':
+      moveForward = true;
+      break;
+    case 'ArrowLeft':
+    case 'KeyA':
+      moveLeft = true;
+      break;
+    case 'ArrowDown':
+    case 'KeyS':
+      moveBackward = true;
+      break;
+    case 'ArrowRight':
+    case 'KeyD':
+      moveRight = true;
+      break;
+    case 'Space':
+      if (canJump === true) velocity.y += 350;
+      canJump = false;
+      break;
+  }
+}
+
+function onKeyUp(event) {
+  switch (event.code) {
+    case 'ArrowUp':
+    case 'KeyW':
+      moveForward = false;
+      break;
+    case 'ArrowLeft':
+    case 'KeyA':
+      moveLeft = false;
+      break;
+    case 'ArrowDown':
+    case 'KeyS':
+      moveBackward = false;
+      break;
+    case 'ArrowRight':
+    case 'KeyD':
+      moveRight = false;
+      break;
+  }
 }
 
 function render() {
-
-  controls.update(clock.getDelta());
+  const delta = clock.getDelta();
+  if (controls.isLocked === true) {
+    direction.z = Number(moveForward) - Number(moveBackward);
+    direction.x = Number(moveRight) - Number(moveLeft);
+    direction.normalize();
+    velocity.x -= velocity.x * 10.0 * delta;
+    velocity.z -= velocity.z * 10.0 * delta;
+    velocity.y -= 9.8 * 100.0 * delta; // gravity
+    if (moveForward) velocity.z -= 400.0 * delta;
+    if (moveBackward) velocity.z += 400.0 * delta;
+    if (moveLeft) velocity.x -= 400.0 * delta;
+    if (moveRight) velocity.x += 400.0 * delta;
+    controls.moveRight(-velocity.x * delta);
+    controls.moveForward(-velocity.z * delta);
+    camera.position.y += velocity.y * delta;
+    if (camera.position.y < getY(worldHalfWidth, worldHalfDepth) * 100 + 100) {
+      velocity.y = 0;
+      camera.position.y = getY(worldHalfWidth, worldHalfDepth) * 100 + 100;
+      canJump = true;
+    }
+  }
   renderer.render(scene, camera);
-
 }

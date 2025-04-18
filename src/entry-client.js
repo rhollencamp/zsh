@@ -6,6 +6,9 @@ import { PointerLockControls } from "three/addons/controls/PointerLockControls.j
 import { ImprovedNoise } from "three/addons/math/ImprovedNoise.js";
 import * as BufferGeometryUtils from "three/addons/utils/BufferGeometryUtils.js";
 
+import "./style.scss";
+import { Modal } from "bootstrap";
+
 let stats;
 
 let camera, controls, scene, renderer;
@@ -132,34 +135,13 @@ function init() {
   controls = new PointerLockControls(camera, renderer.domElement);
   scene.add(controls.getObject());
 
-  // UI blocker for pointer lock
-  const blocker = document.createElement("div");
-  blocker.id = "blocker";
-  blocker.style.position = "absolute";
-  blocker.style.top = "0";
-  blocker.style.left = "0";
-  blocker.style.width = "100vw";
-  blocker.style.height = "100vh";
-  blocker.style.backgroundColor = "rgba(0,0,0,0.5)";
-  blocker.style.display = "flex";
-  blocker.style.alignItems = "center";
-  blocker.style.justifyContent = "center";
-  blocker.style.zIndex = "100";
-  blocker.innerHTML =
-    '<div style="color:white;font-size:2em;">Click to play</div>';
-  document.body.appendChild(blocker);
-
-  blocker.addEventListener("click", function () {
-    controls.lock();
-  });
-
-  controls.addEventListener("lock", function () {
-    blocker.style.display = "none";
-  });
-
-  controls.addEventListener("unlock", function () {
-    blocker.style.display = "flex";
-  });
+  // add a welcome modal that captures mouse when you click play
+  new Modal(document.getElementById("welcomeModal")).show();
+  document
+    .getElementById("welcomeModal")
+    .addEventListener("hide.bs.modal", function () {
+      controls.lock();
+    });
 
   document.addEventListener("keydown", onKeyDown);
   document.addEventListener("keyup", onKeyUp);

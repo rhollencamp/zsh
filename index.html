@@ -21,6 +21,36 @@
   </head>
 
   <body>
+    <div
+      class="modal fade"
+      id="welcomeModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="welcomeModalTitle"
+      aria-hidden="true"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+    >
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="welcomeModalTitle">zsh</h5>
+          </div>
+          <div class="modal-body">
+            <p>Welcome to zsh</p>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Play
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
     <script type="module" src="src/entry-client.js"></script>
   </body>
 </html>

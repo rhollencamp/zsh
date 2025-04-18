@@ -1,6 +1,10 @@
 {
   "name": "zsh",
   "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node server"
+  },
   "dependencies": {
     "three": "^0.175.0"
   },

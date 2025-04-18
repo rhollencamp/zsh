@@ -10,6 +10,7 @@ export default [
         console: true,
         window: true,
         document: true,
+        WebSocket: true,
       },
     },
   },

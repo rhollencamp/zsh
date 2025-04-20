@@ -23,8 +23,6 @@ const data = generateHeight(worldWidth, worldDepth);
 
 const clock = new THREE.Clock();
 
-init();
-
 function init() {
   camera = new THREE.PerspectiveCamera(
     60,
@@ -130,15 +128,6 @@ function init() {
   controls = new PointerLockControls(camera, renderer.domElement);
   scene.add(controls.getObject());
 
-  // add a welcome modal that captures mouse when you click play
-  new Modal(document.getElementById("welcomeModal")).show();
-  document
-    .getElementById("welcomeModal")
-    .addEventListener("hide.bs.modal", function () {
-      controls.lock();
-      connectWebSocket();
-    });
-
   stats = new Stats();
   document.body.appendChild(stats.dom);
 
@@ -193,3 +182,13 @@ function render() {
   }
   renderer.render(scene, camera);
 }
+
+// add a welcome modal that captures mouse when you click play
+new Modal(document.getElementById("welcomeModal")).show();
+  document
+    .getElementById("welcomeModal")
+    .addEventListener("hide.bs.modal", function () {
+      connectWebSocket();
+      init();
+      controls.lock();
+    });

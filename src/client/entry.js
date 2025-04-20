@@ -3,7 +3,6 @@ import * as THREE from "three";
 import Stats from "three/addons/libs/stats.module.js";
 
 import { PointerLockControls } from "three/addons/controls/PointerLockControls.js";
-import { ImprovedNoise } from "three/addons/math/ImprovedNoise.js";
 import * as BufferGeometryUtils from "three/addons/utils/BufferGeometryUtils.js";
 
 import "./style.scss";
@@ -15,11 +14,7 @@ let stats;
 
 let camera, controls, scene, renderer;
 
-const worldWidth = 128,
-  worldDepth = 128;
-const worldHalfWidth = worldWidth / 2;
-const worldHalfDepth = worldDepth / 2;
-const data = generateHeight(worldWidth, worldDepth);
+const world = initializeWorld(128, 128, 128);
 
 const clock = new THREE.Clock();
 
@@ -28,79 +23,41 @@ function init() {
     60,
     window.innerWidth / window.innerHeight,
   );
-  camera.position.y = getY(worldHalfWidth, worldHalfDepth) + 1;
+  camera.position.set(0.0, 1.0, 0.0);
+  camera.lookAt(1.0, 1.0, 1.0);
 
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0xbfd1e5);
 
-  // sides
-
-  const matrix = new THREE.Matrix4();
-
-  const pxGeometry = new THREE.PlaneGeometry(1, 1);
-  pxGeometry.attributes.uv.array[1] = 0.5;
-  pxGeometry.attributes.uv.array[3] = 0.5;
-  pxGeometry.rotateY(Math.PI / 2);
-  pxGeometry.translate(0.5, 0, 0);
-
-  const nxGeometry = new THREE.PlaneGeometry(1, 1);
-  nxGeometry.attributes.uv.array[1] = 0.5;
-  nxGeometry.attributes.uv.array[3] = 0.5;
-  nxGeometry.rotateY(-Math.PI / 2);
-  nxGeometry.translate(-0.5, 0, 0);
-
-  const pyGeometry = new THREE.PlaneGeometry(1, 1);
-  pyGeometry.attributes.uv.array[5] = 0.5;
-  pyGeometry.attributes.uv.array[7] = 0.5;
-  pyGeometry.rotateX(-Math.PI / 2);
-  pyGeometry.translate(0, 0.5, 0);
-
-  const pzGeometry = new THREE.PlaneGeometry(1, 1);
-  pzGeometry.attributes.uv.array[1] = 0.5;
-  pzGeometry.attributes.uv.array[3] = 0.5;
-  pzGeometry.translate(0, 0, 0.5);
-
-  const nzGeometry = new THREE.PlaneGeometry(1, 1);
-  nzGeometry.attributes.uv.array[1] = 0.5;
-  nzGeometry.attributes.uv.array[3] = 0.5;
-  nzGeometry.rotateY(Math.PI);
-  nzGeometry.translate(0, 0, -0.5);
-
   const geometries = [];
-
-  for (let z = 0; z < worldDepth; z++) {
-    for (let x = 0; x < worldWidth; x++) {
-      const h = getY(x, z);
-
-      matrix.makeTranslation(x - worldHalfWidth, h, z - worldHalfDepth);
-
-      const px = getY(x + 1, z);
-      const nx = getY(x - 1, z);
-      const pz = getY(x, z + 1);
-      const nz = getY(x, z - 1);
-
-      geometries.push(pyGeometry.clone().applyMatrix4(matrix));
-
-      if ((px !== h && px !== h + 1) || x === 0) {
-        geometries.push(pxGeometry.clone().applyMatrix4(matrix));
-      }
-
-      if ((nx !== h && nx !== h + 1) || x === worldWidth - 1) {
-        geometries.push(nxGeometry.clone().applyMatrix4(matrix));
-      }
-
-      if ((pz !== h && pz !== h + 1) || z === worldDepth - 1) {
-        geometries.push(pzGeometry.clone().applyMatrix4(matrix));
-      }
-
-      if ((nz !== h && nz !== h + 1) || z === 0) {
-        geometries.push(nzGeometry.clone().applyMatrix4(matrix));
+  for (let y = 0; y < world.length; y++) {
+    for (let x = 0; x < world[y].length; x++) {
+      for (let z = 0; z < world[y][x].length; z++) {
+        if (world[y][x][z] === 1) {
+          const geometry = new THREE.BoxGeometry(1, 1, 1);
+          geometry.translate(x, y, z);
+          const attr = geometry.getAttribute("uv").array;
+          attr[1] = 0.5;
+          attr[3] = 0.5;
+          attr[9] = 0.5;
+          attr[11] = 0.5;
+          attr[21] = 0.5;
+          attr[23] = 0.5;
+          attr[29] = 0.5;
+          attr[31] = 0.5;
+          attr[33] = 0.5;
+          attr[35] = 0.5;
+          attr[41] = 0.5;
+          attr[43] = 0.5;
+          attr[49] = 0.5;
+          attr[51] = 0.5;
+          geometries.push(geometry);
+        }
       }
     }
   }
 
   const geometry = BufferGeometryUtils.mergeGeometries(geometries);
-  geometry.computeBoundingSphere();
 
   const texture = new THREE.TextureLoader().load("/atlas.png");
   texture.colorSpace = THREE.SRGBColorSpace;
@@ -140,31 +97,26 @@ function onWindowResize() {
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-function generateHeight(width, height) {
-  const data = [],
-    perlin = new ImprovedNoise(),
-    size = width * height,
-    z = Math.random() * 100;
-
-  let quality = 2;
-
-  for (let j = 0; j < 4; j++) {
-    if (j === 0) for (let i = 0; i < size; i++) data[i] = 0;
-
-    for (let i = 0; i < size; i++) {
-      const x = i % width,
-        y = (i / width) | 0;
-      data[i] += perlin.noise(x / quality, y / quality, z) * quality;
+function initializeWorld(sizeY, sizeX, sizeZ) {
+  const world = [];
+  for (let y = 0; y < sizeY; y++) {
+    const plane = [];
+    for (let x = 0; x < sizeX; x++) {
+      const column = [];
+      for (let z = 0; z < sizeZ; z++) {
+        column.push(y === 0 ? 1 : 0);
+      }
+      plane.push(column);
     }
-
-    quality *= 4;
+    world.push(plane);
   }
 
-  return data;
-}
-
-function getY(x, z) {
-  return (data[x + z * worldWidth] * 0.15) | 0;
+  world[1][5][0] = 1;
+  world[1][4][0] = 1;
+  world[1][3][0] = 1;
+  world[1][2][0] = 1;
+  world[1][1][0] = 1;
+  return world;
 }
 
 function animate() {
@@ -185,10 +137,10 @@ function render() {
 
 // add a welcome modal that captures mouse when you click play
 new Modal(document.getElementById("welcomeModal")).show();
-  document
-    .getElementById("welcomeModal")
-    .addEventListener("hide.bs.modal", function () {
-      connectWebSocket();
-      init();
-      controls.lock();
-    });
+document
+  .getElementById("welcomeModal")
+  .addEventListener("hide.bs.modal", function () {
+    connectWebSocket();
+    init();
+    controls.lock();
+  });

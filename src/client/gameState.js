@@ -1,0 +1,3 @@
+let world;
+
+export { world };

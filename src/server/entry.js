@@ -1,9 +1,10 @@
 import { readFileSync } from "node:fs";
-import { createServer as createHttpServer } from "node:http";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createServer as createViteServer } from "vite";
-import { onUpgrade } from "./netcode.js";
+import { WebSocketServer } from "ws";
+import { createServer as createHttpServer } from "node:http";
+import { handleWebsocketConnection } from "./netcode.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -36,11 +37,7 @@ const server = createHttpServer((req, res) => {
   });
 });
 
-// Handle HTTP server upgrade requests for WebSockets
-server.on("upgrade", onUpgrade);
+server.listen(8080);
 
-// Start the server
-server.listen(8080, () => {
-  console.log("HTTP server listening on port 8080");
-  console.log("WebSocket server ready on path /ws");
-});
+const wss = new WebSocketServer({ server });
+wss.on("connection", handleWebsocketConnection);

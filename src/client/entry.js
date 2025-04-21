@@ -9,12 +9,11 @@ import "./style.scss";
 import { Modal } from "bootstrap";
 import { connectWebSocket } from "./netcode.js";
 import { getMoveVector } from "./controls.js";
+import { world } from "./engine.js";
 
 let stats;
 
 let camera, controls, scene, renderer;
-
-const world = initializeWorld(128, 128, 128);
 
 const clock = new THREE.Clock();
 
@@ -97,28 +96,6 @@ function onWindowResize() {
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-function initializeWorld(sizeY, sizeX, sizeZ) {
-  const world = [];
-  for (let y = 0; y < sizeY; y++) {
-    const plane = [];
-    for (let x = 0; x < sizeX; x++) {
-      const column = [];
-      for (let z = 0; z < sizeZ; z++) {
-        column.push(y === 0 ? 1 : 0);
-      }
-      plane.push(column);
-    }
-    world.push(plane);
-  }
-
-  world[1][5][0] = 1;
-  world[1][4][0] = 1;
-  world[1][3][0] = 1;
-  world[1][2][0] = 1;
-  world[1][1][0] = 1;
-  return world;
-}
-
 function animate() {
   render();
   stats.update();
@@ -136,11 +113,14 @@ function render() {
 }
 
 // add a welcome modal that captures mouse when you click play
-new Modal(document.getElementById("welcomeModal")).show();
+Modal.getOrCreateInstance(document.getElementById("welcomeModal")).show();
 document
-  .getElementById("welcomeModal")
-  .addEventListener("hide.bs.modal", function () {
+  .getElementById("welcomeModalPlayButton")
+  .addEventListener("click", () => {
+    document.getElementById("welcomeModalPlayButton").disabled = true;
+    document.getElementById("welcomeModalPlayButton").textContent =
+      "Connecting...";
     connectWebSocket();
-    init();
-    controls.lock();
   });
+
+export { init, controls };

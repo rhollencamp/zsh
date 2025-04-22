@@ -3,6 +3,7 @@ import { BoxGeometry } from "three";
 import { Clock } from "three";
 import { Color } from "three";
 import { DoubleSide } from "three";
+import { Fog } from "three";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { Mesh } from "three";
 import { MeshLambertMaterial } from "three";
@@ -40,6 +41,7 @@ function init() {
   camera.lookAt(1.0, 1.0, 1.0);
 
   scene.background = new Color(0xbfd1e5);
+  scene.fog = new Fog(0xbfd1e5, 1, 20);
 
   const geometries = [];
   for (let y = 0; y < world.length; y++) {

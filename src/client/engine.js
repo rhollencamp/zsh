@@ -1,4 +1,5 @@
-import { init, controls } from "./entry.js";
+import { init as initGfx } from "./gfx";
+import { controls } from "./gfx";
 import { Modal } from "bootstrap";
 
 let world;
@@ -11,9 +12,12 @@ const EngineState = Object.freeze({
 let engineState = EngineState.DISCONNECTED;
 
 function receiveMapData(mapData) {
+  if (engineState !== EngineState.DISCONNECTED) {
+    throw new Error("Cannot receive map data in the current engine state.");
+  }
   world = mapData;
   engineState = EngineState.GOGOGO;
-  init();
+  initGfx();
   controls.lock();
   Modal.getInstance(document.getElementById("welcomeModal")).hide();
 }

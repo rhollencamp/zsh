@@ -1,6 +1,4 @@
-const world = initializeWorld(100, 100, 100);
-
-function initializeWorld(sizeY, sizeX, sizeZ) {
+function generateWorld(sizeY, sizeX, sizeZ) {
   const world = [];
   for (let y = 0; y < sizeY; y++) {
     const plane = [];
@@ -22,4 +20,4 @@ function initializeWorld(sizeY, sizeX, sizeZ) {
   return world;
 }
 
-export { world };
+export { generateWorld };

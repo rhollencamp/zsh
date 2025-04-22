@@ -1,4 +1,4 @@
-import { world } from "./gameState.js";
+import { world } from "./engine.js";
 
 function handleWebsocketConnection(ws) {
   console.log("Client connected");

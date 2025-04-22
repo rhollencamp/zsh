@@ -36,8 +36,8 @@ const server = createHttpServer((req, res) => {
     res.end(template);
   });
 });
-
 server.listen(8080);
 
+// create websocket server on the same port
 const wss = new WebSocketServer({ server });
 wss.on("connection", handleWebsocketConnection);

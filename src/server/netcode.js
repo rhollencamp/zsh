@@ -1,12 +1,23 @@
-import { world } from "./engine.js";
+import { addPlayer, world } from "./engine.js";
+
+const playerNameToWebSocket = {};
+const webSocketToPlayerName = {};
 
 function handleWebsocketConnection(ws) {
   console.log("Client connected");
 
   ws.on("message", (message) => {
-    if (message.toString() === "JOIN") {
-      // send world data
-      ws.send("WORLD " + JSON.stringify(world));
+    const json = JSON.parse(message);
+    if (json.cmd === "JOIN") {
+      const playerData = addPlayer(json.playerName);
+      if (playerData) {
+        ws.send(JSON.stringify({ cmd: "WORLD", payload: world }));
+        ws.send(JSON.stringify({ cmd: "SPAWN", payload: playerData.position }));
+        playerNameToWebSocket[json.playerName] = ws;
+        webSocketToPlayerName[ws] = json.playerName;
+      } else {
+        console.error(`Player with name ${json.playerName} rejected.`);
+      }
     } else {
       console.log(`Received message => ${message}`);
     }

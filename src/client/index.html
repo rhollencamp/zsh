@@ -36,18 +36,30 @@
           <div class="modal-header">
             <h5 class="modal-title" id="welcomeModalTitle">zsh</h5>
           </div>
-          <div class="modal-body">
-            <p>Welcome to zsh</p>
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              id="welcomeModalPlayButton"
-            >
-              Play
-            </button>
-          </div>
+          <form id="welcomeForm" novalidate>
+            <div class="modal-body">
+              <p>Welcome to zsh</p>
+              <div class="form-group">
+                <label for="welcomeModalPlayerName">Username:</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="welcomeModalPlayerName"
+                  required
+                />
+                <div class="invalid-feedback">Please enter a username.</div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                id="welcomeModalPlayButton"
+              >
+                Play
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>

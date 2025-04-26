@@ -16,10 +16,14 @@ function receiveMapData(mapData) {
     throw new Error("Cannot receive map data in the current engine state.");
   }
   world = mapData;
+}
+
+function spawn(position) {
+  console.log(`Spawning player at position ${position}`);
   engineState = EngineState.GOGOGO;
   initGfx();
   controls.lock();
   Modal.getInstance(document.getElementById("welcomeModal")).hide();
 }
 
-export { world, receiveMapData };
+export { receiveMapData, spawn, world };

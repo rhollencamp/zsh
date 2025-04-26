@@ -1,8 +1,8 @@
-import { receiveMapData } from "./engine.js";
+import { receiveMapData, spawn } from "./engine.js";
 
 let socket;
 
-function connectWebSocket() {
+function connectWebSocket(playerName) {
   const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
   const wsUrl = `${wsProtocol}//${window.location.host}/ws`;
 
@@ -13,24 +13,19 @@ function connectWebSocket() {
   socket.onopen = (event) => {
     console.log("WebSocket connection opened:", event);
     // Send a message to the server upon connection
-    socket.send("JOIN");
+    socket.send(JSON.stringify({ cmd: "JOIN", playerName: playerName }));
   };
 
   socket.onmessage = (event) => {
-    let i;
-    for (i = 0; i < event.data.length; i++) {
-      if (event.data[i] === " ") {
-        break;
-      }
-    }
-    const messageType = event.data.slice(0, i);
-    const messageData = event.data.slice(i + 1);
+    const json = JSON.parse(event.data.toString());
+    console.log(`Message recieved: ${json}`);
 
-    console.log(`Message type => ${messageType}`);
-
-    if (messageType === "WORLD") {
-      const world = JSON.parse(messageData);
-      receiveMapData(world);
+    if (json.cmd === "WORLD") {
+      receiveMapData(json.payload);
+    } else if (json.cmd === "SPAWN") {
+      spawn(json.payload);
+    } else {
+      console.log(`Unknown command: ${json.cmd}`);
     }
   };
 

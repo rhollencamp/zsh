@@ -1,7 +1,7 @@
 # Task List
 
 - [x] set up websocket communication
-- [ ] initialize level geometry in server and send to client
+- [x] initialize level geometry in server and send to client
 - [ ] multiple players
 - [ ] collision detection
 - [ ] stamina and running

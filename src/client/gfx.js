@@ -6,17 +6,19 @@ import { DoubleSide } from "three";
 import { Fog } from "three";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { Mesh } from "three";
+import { MeshBasicMaterial } from "three";
 import { MeshLambertMaterial } from "three";
 import { NearestFilter } from "three";
 import { PerspectiveCamera } from "three";
 import { PointerLockControls } from "three/addons/controls/PointerLockControls.js";
 import { Scene } from "three";
 import { SRGBColorSpace } from "three";
-import Stats from "three/addons/libs/stats.module.js";
 import { TextureLoader } from "three";
 import { WebGLRenderer } from "three";
+import Stats from "three/addons/libs/stats.module.js";
 
 import { getMoveVector } from "./controls.js";
+import { players } from "./engine.js";
 import { world } from "./engine.js";
 
 const camera = new PerspectiveCamera(
@@ -24,6 +26,7 @@ const camera = new PerspectiveCamera(
   window.innerWidth / window.innerHeight,
 );
 const clock = new Clock();
+const playerMeshes = {};
 const scene = new Scene();
 const renderer = new WebGLRenderer();
 const stats = new Stats();
@@ -91,12 +94,30 @@ function init() {
   renderer.setAnimationLoop(animate);
   document.body.appendChild(renderer.domElement);
 
-  scene.add(controls.getObject());
+  scene.add(controls.object);
 
   document.body.appendChild(stats.dom);
 }
 
+function updatePlayers() {
+  for (const playerId in players) {
+    const playerName = players[playerId].name;
+    const playerMesh = playerMeshes[playerId];
+    if (!playerMesh) {
+      const geometry = new BoxGeometry(1, 1, 1);
+      const material = new MeshBasicMaterial({ color: 0x00ff00 });
+      const mesh = new Mesh(geometry, material);
+      mesh.position.set(players[playerId].position.x, players[playerId].position.y, players[playerId].position.z);
+      scene.add(mesh);
+      playerMeshes[playerId] = mesh;
+    } else {
+      playerMesh.position.set(players[playerId].position.x, players[playerId].position.y, players[playerId].position.z);
+    }
+  }
+}
+
 function animate() {
+  updatePlayers();
   render();
   stats.update();
 }

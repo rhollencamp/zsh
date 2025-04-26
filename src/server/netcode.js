@@ -1,4 +1,4 @@
-import { addPlayer, world } from "./engine.js";
+import { addPlayer, updatePlayer, world } from "./engine.js";
 
 const playerNameToWebSocket = {};
 const webSocketToPlayerName = {};
@@ -12,12 +12,15 @@ function handleWebsocketConnection(ws) {
       const playerData = addPlayer(json.playerName);
       if (playerData) {
         ws.send(JSON.stringify({ cmd: "WORLD", payload: world }));
-        ws.send(JSON.stringify({ cmd: "SPAWN", payload: playerData.position }));
+        ws.send(JSON.stringify({ cmd: "PLAYERS", payload: playerData }));
+        ws.send(JSON.stringify({ cmd: "SPAWN", payload: playerData[json.playerName].position }));
         playerNameToWebSocket[json.playerName] = ws;
         webSocketToPlayerName[ws] = json.playerName;
       } else {
         console.error(`Player with name ${json.playerName} rejected.`);
       }
+    } else if (json.cmd === "STATE") {
+      updatePlayer(webSocketToPlayerName[ws], json.payload);
     } else {
       console.log(`Received message => ${message}`);
     }
@@ -28,4 +31,10 @@ function handleWebsocketConnection(ws) {
   });
 }
 
-export { handleWebsocketConnection };
+function broadcast(playerData) {
+  for (const ws of Object.values(playerNameToWebSocket)) {
+    ws.send(JSON.stringify({ cmd: "PLAYERS", payload: playerData }));
+  }
+}
+
+export { broadcast, handleWebsocketConnection };

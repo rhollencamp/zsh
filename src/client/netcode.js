@@ -1,4 +1,4 @@
-import { receiveMapData, spawn } from "./engine.js";
+import { receiveMapData, spawn, updatePlayers } from "./engine.js";
 
 let socket;
 
@@ -22,6 +22,8 @@ function connectWebSocket(playerName) {
 
     if (json.cmd === "WORLD") {
       receiveMapData(json.payload);
+    } else if (json.cmd === "PLAYERS") {
+      updatePlayers(json.payload);
     } else if (json.cmd === "SPAWN") {
       spawn(json.payload);
     } else {
@@ -39,4 +41,8 @@ function connectWebSocket(playerName) {
   };
 }
 
-export { connectWebSocket };
+function sendUpdate(state) {
+  socket.send(JSON.stringify({ cmd: "STATE", payload: state }));
+}
+
+export { connectWebSocket, sendUpdate };

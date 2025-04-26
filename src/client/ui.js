@@ -1,11 +1,16 @@
-import { Modal } from "bootstrap";
 import { connectWebSocket } from "./netcode.js";
+import { controls } from "./gfx.js";
+import { Modal } from "bootstrap";
 
 function init() {
   Modal.getOrCreateInstance(document.getElementById("welcomeModal")).show();
   document
     .getElementById("welcomeModalPlayButton")
     .addEventListener("click", onWelcomeModalSubmit);
+
+  document.getElementById("lockButton").addEventListener("click", () => {
+    controls.lock();
+  });
 }
 
 function onWelcomeModalSubmit() {

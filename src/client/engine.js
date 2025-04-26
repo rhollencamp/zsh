@@ -1,7 +1,9 @@
-import { init as initGfx } from "./gfx";
 import { controls } from "./gfx";
+import { init as initGfx } from "./gfx";
+import { sendUpdate } from "./netcode.js";
 import { Modal } from "bootstrap";
 
+let players = {};
 let world;
 
 const EngineState = Object.freeze({
@@ -24,6 +26,14 @@ function spawn(position) {
   initGfx();
   controls.lock();
   Modal.getInstance(document.getElementById("welcomeModal")).hide();
+
+  setInterval(() => {
+      sendUpdate(controls.object.position);
+  }, 100);
 }
 
-export { receiveMapData, spawn, world };
+function updatePlayers(playerData) {
+  players = playerData;
+}
+
+export { players, receiveMapData, spawn, updatePlayers, world };

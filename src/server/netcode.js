@@ -13,7 +13,12 @@ function handleWebsocketConnection(ws) {
       if (playerData) {
         ws.send(JSON.stringify({ cmd: "WORLD", payload: world }));
         ws.send(JSON.stringify({ cmd: "PLAYERS", payload: playerData }));
-        ws.send(JSON.stringify({ cmd: "SPAWN", payload: playerData[json.playerName].position }));
+        ws.send(
+          JSON.stringify({
+            cmd: "SPAWN",
+            payload: playerData[json.playerName].position,
+          }),
+        );
         playerNameToWebSocket[json.playerName] = ws;
         webSocketToPlayerName[ws] = json.playerName;
       } else {

@@ -4,6 +4,10 @@ import { Clock } from "three";
 import { Color } from "three";
 import { DoubleSide } from "three";
 import { Fog } from "three";
+import { Line } from "three";
+import { LineBasicMaterial } from "three";
+import { BufferGeometry } from "three";
+import { Float32BufferAttribute } from "three";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { Mesh } from "three";
 import { MeshBasicMaterial } from "three";
@@ -96,6 +100,19 @@ function init() {
 
   scene.add(controls.object);
 
+  // crosshair
+  const crosshairGeometry = new BufferGeometry();
+  crosshairGeometry.setAttribute(
+    "position",
+    new Float32BufferAttribute([-0.001, 0, -0.1, 0.001, 0, -0.1], 3),
+  );
+  const crosshairMaterial = new LineBasicMaterial({ color: 0xffffff });
+  const crosshairHorizontal = new Line(crosshairGeometry, crosshairMaterial);
+  const crosshairVertical = new Line(crosshairGeometry, crosshairMaterial);
+  crosshairVertical.rotation.z = Math.PI / 2;
+  camera.add(crosshairHorizontal);
+  camera.add(crosshairVertical);
+
   document.body.appendChild(stats.dom);
 }
 
@@ -107,11 +124,19 @@ function updatePlayers() {
       const geometry = new BoxGeometry(1, 1, 1);
       const material = new MeshBasicMaterial({ color: 0x00ff00 });
       const mesh = new Mesh(geometry, material);
-      mesh.position.set(players[playerId].position.x, players[playerId].position.y, players[playerId].position.z);
+      mesh.position.set(
+        players[playerId].position.x,
+        players[playerId].position.y,
+        players[playerId].position.z,
+      );
       scene.add(mesh);
       playerMeshes[playerId] = mesh;
     } else {
-      playerMesh.position.set(players[playerId].position.x, players[playerId].position.y, players[playerId].position.z);
+      playerMesh.position.set(
+        players[playerId].position.x,
+        players[playerId].position.y,
+        players[playerId].position.z,
+      );
     }
   }
 }

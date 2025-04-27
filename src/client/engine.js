@@ -28,7 +28,7 @@ function spawn(position) {
   Modal.getInstance(document.getElementById("welcomeModal")).hide();
 
   setInterval(() => {
-      sendUpdate(controls.object.position);
+    sendUpdate(controls.object.position);
   }, 100);
 }
 

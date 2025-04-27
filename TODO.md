@@ -1,8 +1,20 @@
 # Task List
 
-- [x] set up websocket communication
-- [x] initialize level geometry in server and send to client
-- [ ] multiple players
-- [ ] collision detection
-- [ ] stamina and running
-- [ ] inventory
+## Short Term
+
+- collision detection with world geometry
+- ability to destroy blocks
+- ability to place blocks
+- player disconnections
+
+## Medium Term
+
+- stamina and running
+- inventory
+- different block shapes and textures
+- authenticate players using some means
+- ability to persist world data
+
+## Long Term
+
+- optimize netcode, very chatty

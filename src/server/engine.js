@@ -12,7 +12,7 @@ function addPlayer(playerName) {
   } else {
     players[playerName] = {
       name: playerName,
-      position: { x: 0, y: 0, z: 0 },
+      position: { x: 0, y: 2, z: 0 },
     };
     console.log(`Player ${playerName} joined.`);
     return players;

@@ -25,7 +25,7 @@ function connectWebSocket(playerName) {
     } else if (json.cmd === "PLAYERS") {
       updatePlayers(json.payload);
     } else if (json.cmd === "SPAWN") {
-      spawn(json.payload);
+      spawn(playerName, json.payload);
     } else {
       console.log(`Unknown command: ${json.cmd}`);
     }

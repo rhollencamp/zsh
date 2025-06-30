@@ -19,8 +19,17 @@ function addPlayer(playerName) {
   }
 }
 
-function updatePlayer(playerName, position) {
-  players[playerName].position = position;
+function updatePlayer(playerName, payload) {
+  if (payload === "DISCONNECT") {
+    // TODO we need to persist player state between sessions
+    delete players[playerName];
+  } else {
+    if (players[playerName] === undefined) {
+      console.error(`updating players -- player ${playerName} not found.`);
+    } else {
+      players[playerName].position = payload;
+    }
+  }
 }
 
 setInterval(() => {

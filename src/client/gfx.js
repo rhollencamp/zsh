@@ -117,8 +117,9 @@ function init() {
 }
 
 function updatePlayers() {
+  const copy = { ...playerMeshes };
   for (const playerId in players) {
-    const playerName = players[playerId].name;
+    delete copy[playerId];
     const playerMesh = playerMeshes[playerId];
     if (!playerMesh) {
       const geometry = new BoxGeometry(1, 1, 1);
@@ -138,6 +139,13 @@ function updatePlayers() {
         players[playerId].position.z,
       );
     }
+  }
+
+  // if we have any meshes that no longer have a connected player, remove them
+  for (const playerId in copy) {
+    const playerMesh = copy[playerId];
+    scene.remove(playerMesh);
+    delete playerMeshes[playerId];
   }
 }
 

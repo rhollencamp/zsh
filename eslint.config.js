@@ -11,6 +11,7 @@ export default [
         window: true,
         document: true,
         WebSocket: true,
+        setInterval: true
       },
     },
   },

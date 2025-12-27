@@ -1,11 +1,15 @@
-import { defineConfig } from "vite";
-
-export default defineConfig({
+export default {
   css: {
     preprocessorOptions: {
       scss: {
-        silenceDeprecations: ["import", "color-functions", "global-builtin"],
+        quietDeps: true,
+        silenceDeprecations: [
+          "color-functions",
+          "global-builtin",
+          "if-function",
+          "import",
+        ],
       },
     },
   },
-});
+};

@@ -12,7 +12,7 @@
     "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.5",
     "connect": "^3.7.0",
-    "three": "^0.175.0",
+    "three": "^0.182.0",
     "ws": "^8.18.1"
   },
   "devDependencies": {

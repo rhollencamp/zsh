@@ -9,23 +9,43 @@ interface WebSocketMessage {
   payload?: unknown;
 }
 
-let socket: WebSocket;
+export class Netcode {
+  private socket: WebSocket | null = null;
+  private playerName: string | null = null;
 
-function connectWebSocket(playerName: string): void {
-  const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-  const wsUrl = `${wsProtocol}//${window.location.host}/ws`;
+  connect(playerName: string): void {
+    const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    const wsUrl = `${wsProtocol}//${window.location.host}/ws`;
 
-  console.log(`Connecting to WebSocket server at ${wsUrl}`);
+    console.log(`Connecting to WebSocket server at ${wsUrl}`);
 
-  socket = new WebSocket(wsUrl);
+    this.playerName = playerName;
+    this.socket = new WebSocket(wsUrl);
 
-  socket.onopen = (event: Event) => {
-    console.log("WebSocket connection opened:", event);
-    // Send a message to the server upon connection
-    socket.send(JSON.stringify({ cmd: "JOIN", playerName: playerName }));
-  };
+    this.socket.onopen = (event: Event) => {
+      console.log("WebSocket connection opened:", event);
+      if (this.socket) {
+        this.socket.send(
+          JSON.stringify({ cmd: "JOIN", playerName: playerName }),
+        );
+      }
+    };
 
-  socket.onmessage = (event: MessageEvent) => {
+    this.socket.onmessage = (event: MessageEvent) => {
+      this.handleMessage(event);
+    };
+
+    this.socket.onclose = (event: CloseEvent) => {
+      console.log("WebSocket connection closed:", event);
+      this.socket = null;
+    };
+
+    this.socket.onerror = (error: Event) => {
+      console.error("WebSocket error observed:", error);
+    };
+  }
+
+  private handleMessage(event: MessageEvent): void {
     const json = JSON.parse(event.data.toString()) as WebSocketMessage;
 
     if (json.cmd === "WORLD") {
@@ -34,7 +54,7 @@ function connectWebSocket(playerName: string): void {
       const serializedPlayers = json.payload as Record<string, any>;
       const players = new Map<string, PlayerData>();
       for (const [name, data] of Object.entries(serializedPlayers)) {
-        if (name !== playerName) {
+        if (name !== this.playerName) {
           players.set(name, {
             name: data.name,
             position: deserializeVector3(data.position),
@@ -43,24 +63,36 @@ function connectWebSocket(playerName: string): void {
       }
       updatePlayers(players);
     } else if (json.cmd === "SPAWN") {
-      spawn(playerName, deserializeVector3(json.payload));
+      spawn(this.playerName as string, deserializeVector3(json.payload));
     } else {
       console.log(`Unknown command: ${json.cmd}`);
     }
-  };
+  }
 
-  socket.onclose = (event: CloseEvent) => {
-    console.log("WebSocket connection closed:", event);
-    // Handle connection closing, maybe attempt to reconnect?
-  };
+  sendUpdate(state: Vector3): void {
+    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+      this.socket.send(JSON.stringify({ cmd: "STATE", payload: state }));
+    }
+  }
 
-  socket.onerror = (error: Event) => {
-    console.error("WebSocket error observed:", error);
-  };
+  disconnect(): void {
+    if (this.socket) {
+      this.socket.close();
+      this.socket = null;
+    }
+  }
+
+  isConnected(): boolean {
+    return this.socket !== null && this.socket.readyState === WebSocket.OPEN;
+  }
 }
-
-function sendUpdate(state: Vector3): void {
-  socket.send(JSON.stringify({ cmd: "STATE", payload: state }));
+/**
+ * legacy singleton export; TODO instantiate and dependancy inject
+ */
+const instance: Netcode = new Netcode();
+export function connectWebSocket(playerName: string): void {
+  instance.connect(playerName);
 }
-
-export { connectWebSocket, sendUpdate };
+export function sendUpdate(state: Vector3): void {
+  instance.sendUpdate(state);
+}

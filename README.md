@@ -2,4 +2,4 @@
 
 # Attribution
 
-* Textures are from https://faithfulpack.net/
+- Textures are from https://faithfulpack.net/

@@ -1,12 +1,12 @@
 import { Vector3 } from "three";
 
 const direction = new Vector3();
-let moveForward = false,
-  moveBackward = false,
-  moveLeft = false,
-  moveRight = false;
+let moveForward = false;
+let moveBackward = false;
+let moveLeft = false;
+let moveRight = false;
 
-function onKeyDown(event) {
+function onKeyDown(event: KeyboardEvent): void {
   switch (event.code) {
     case "ArrowUp":
     case "KeyW":
@@ -27,7 +27,7 @@ function onKeyDown(event) {
   }
 }
 
-function onKeyUp(event) {
+function onKeyUp(event: KeyboardEvent): void {
   switch (event.code) {
     case "ArrowUp":
     case "KeyW":
@@ -48,7 +48,7 @@ function onKeyUp(event) {
   }
 }
 
-function getMoveVector() {
+function getMoveVector(): Vector3 {
   direction.z = Number(moveForward) - Number(moveBackward);
   direction.x = Number(moveRight) - Number(moveLeft);
   direction.normalize();

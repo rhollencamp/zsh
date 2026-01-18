@@ -30,7 +30,7 @@ const camera = new PerspectiveCamera(
   window.innerWidth / window.innerHeight,
 );
 const clock = new Clock();
-const playerMeshes = {};
+const playerMeshes: Record<string, Mesh> = {};
 const scene = new Scene();
 const renderer = new WebGLRenderer();
 const stats = new Stats();
@@ -43,36 +43,38 @@ window.addEventListener("resize", () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-function init() {
+function init(): void {
   camera.position.set(0.0, 1.0, 0.0);
   camera.lookAt(1.0, 1.0, 1.0);
 
   scene.background = new Color(0xbfd1e5);
   scene.fog = new Fog(0xbfd1e5, 1, 20);
 
-  const geometries = [];
-  for (let y = 0; y < world.length; y++) {
-    for (let x = 0; x < world[y].length; x++) {
-      for (let z = 0; z < world[y][x].length; z++) {
-        if (world[y][x][z] === 1) {
-          const geometry = new BoxGeometry(1, 1, 1);
-          geometry.translate(x, y, z);
-          const attr = geometry.getAttribute("uv").array;
-          attr[1] = 0.5;
-          attr[3] = 0.5;
-          attr[9] = 0.5;
-          attr[11] = 0.5;
-          attr[21] = 0.5;
-          attr[23] = 0.5;
-          attr[29] = 0.5;
-          attr[31] = 0.5;
-          attr[33] = 0.5;
-          attr[35] = 0.5;
-          attr[41] = 0.5;
-          attr[43] = 0.5;
-          attr[49] = 0.5;
-          attr[51] = 0.5;
-          geometries.push(geometry);
+  const geometries: BufferGeometry[] = [];
+  if (world) {
+    for (let y = 0; y < world.length; y++) {
+      for (let x = 0; x < world[y].length; x++) {
+        for (let z = 0; z < world[y][x].length; z++) {
+          if (world[y][x][z] === 1) {
+            const geometry = new BoxGeometry(1, 1, 1);
+            geometry.translate(x, y, z);
+            const attr = geometry.getAttribute("uv").array as Float32Array;
+            attr[1] = 0.5;
+            attr[3] = 0.5;
+            attr[9] = 0.5;
+            attr[11] = 0.5;
+            attr[21] = 0.5;
+            attr[23] = 0.5;
+            attr[29] = 0.5;
+            attr[31] = 0.5;
+            attr[33] = 0.5;
+            attr[35] = 0.5;
+            attr[41] = 0.5;
+            attr[43] = 0.5;
+            attr[49] = 0.5;
+            attr[51] = 0.5;
+            geometries.push(geometry);
+          }
         }
       }
     }
@@ -116,27 +118,28 @@ function init() {
   document.body.appendChild(stats.dom);
 }
 
-function updatePlayers() {
+function updatePlayers(): void {
   const copy = { ...playerMeshes };
-  for (const playerId in players) {
+  for (const playerId of players.keys()) {
     delete copy[playerId];
     const playerMesh = playerMeshes[playerId];
-    if (!playerMesh) {
+    const playerData = players.get(playerId);
+    if (!playerMesh && playerData) {
       const geometry = new BoxGeometry(1, 1, 1);
       const material = new MeshBasicMaterial({ color: 0x00ff00 });
       const mesh = new Mesh(geometry, material);
       mesh.position.set(
-        players[playerId].position.x,
-        players[playerId].position.y,
-        players[playerId].position.z,
+        playerData.position.x,
+        playerData.position.y,
+        playerData.position.z,
       );
       scene.add(mesh);
       playerMeshes[playerId] = mesh;
-    } else {
+    } else if (playerMesh && playerData) {
       playerMesh.position.set(
-        players[playerId].position.x,
-        players[playerId].position.y,
-        players[playerId].position.z,
+        playerData.position.x,
+        playerData.position.y,
+        playerData.position.z,
       );
     }
   }
@@ -149,13 +152,13 @@ function updatePlayers() {
   }
 }
 
-function animate() {
+function animate(): void {
   updatePlayers();
   render();
   stats.update();
 }
 
-function render() {
+function render(): void {
   const delta = clock.getDelta();
   if (controls.isLocked === true) {
     const direction = getMoveVector();

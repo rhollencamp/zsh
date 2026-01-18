@@ -1,9 +1,15 @@
-function generateWorld(sizeY, sizeX, sizeZ) {
-  const world = [];
+type WorldChunk = number[][][];
+
+function generateWorld(
+  sizeY: number,
+  sizeX: number,
+  sizeZ: number,
+): WorldChunk {
+  const world: WorldChunk = [];
   for (let y = 0; y < sizeY; y++) {
-    const plane = [];
+    const plane: number[][] = [];
     for (let x = 0; x < sizeX; x++) {
-      const column = [];
+      const column: number[] = [];
       for (let z = 0; z < sizeZ; z++) {
         column.push(y === 0 ? 1 : 0);
       }

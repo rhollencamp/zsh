@@ -1,0 +1,9 @@
+{
+  "//": "shared code must run in both node and the browser: no DOM, no node types",
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2023"],
+    "types": []
+  },
+  "include": ["src/shared"]
+}

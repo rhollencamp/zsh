@@ -1,17 +1,11 @@
+import { resolve } from "node:path";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  css: {
-    preprocessorOptions: {
-      scss: {
-        quietDeps: true,
-        silenceDeprecations: [
-          "color-functions",
-          "global-builtin",
-          "if-function",
-          "import",
-        ],
-      },
-    },
+  root: resolve(import.meta.dirname, "src/client"),
+  publicDir: resolve(import.meta.dirname, "public"),
+  build: {
+    outDir: resolve(import.meta.dirname, "dist/client"),
+    emptyOutDir: true,
   },
 });

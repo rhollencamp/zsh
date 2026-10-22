@@ -1,47 +1,51 @@
-import { connectWebSocket } from "./netcode.js";
-import { controls } from "./gfx.js";
-import { Modal } from "bootstrap";
+/** The join screen. */
+export class WelcomeScreen {
+  private readonly overlay: HTMLElement;
+  private readonly form: HTMLFormElement;
+  private readonly nameInput: HTMLInputElement;
+  private readonly button: HTMLButtonElement;
+  private readonly error: HTMLElement;
 
-function init(): void {
-  const welcomeModal = document.getElementById("welcomeModal");
-  if (welcomeModal) {
-    Modal.getOrCreateInstance(welcomeModal).show();
+  constructor(doc: Document) {
+    this.overlay = byId(doc, "welcome");
+    this.form = byId(doc, "welcome-form");
+    this.nameInput = byId(doc, "player-name");
+    this.button = byId(doc, "play-button");
+    this.error = byId(doc, "welcome-error");
   }
 
-  const playButton = document.getElementById("welcomeModalPlayButton");
-  if (playButton) {
-    playButton.addEventListener("click", onWelcomeModalSubmit);
-  }
-
-  const lockButton = document.getElementById("lockButton");
-  if (lockButton) {
-    lockButton.addEventListener("click", () => {
-      controls.lock();
+  onPlay(callback: (name: string) => void): void {
+    this.form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      callback(this.nameInput.value.trim());
     });
   }
-}
 
-function onWelcomeModalSubmit(): void {
-  const form = document.getElementById("welcomeForm") as HTMLFormElement | null;
-  const playButton = document.getElementById(
-    "welcomeModalPlayButton",
-  ) as HTMLButtonElement | null;
-  const playerNameInput = document.getElementById(
-    "welcomeModalPlayerName",
-  ) as HTMLInputElement | null;
-
-  if (!form || !playButton || !playerNameInput) {
-    console.error("Required form elements not found");
-    return;
+  setConnecting(): void {
+    this.error.hidden = true;
+    this.button.disabled = true;
+    this.button.textContent = "Connecting…";
   }
 
-  if (!form.checkValidity()) {
-    form.classList.add("was-validated");
-  } else {
-    playButton.disabled = true;
-    playButton.textContent = "Connecting...";
-    connectWebSocket(playerNameInput.value);
+  showError(message: string): void {
+    this.overlay.hidden = false;
+    this.error.textContent = message;
+    this.error.hidden = false;
+    this.button.disabled = false;
+    this.button.textContent = "Play";
+    this.nameInput.focus();
+  }
+
+  hide(): void {
+    this.overlay.hidden = true;
+    this.nameInput.blur();
   }
 }
 
-export { init };
+function byId<T extends HTMLElement>(doc: Document, id: string): T {
+  const element = doc.getElementById(id);
+  if (element === null) {
+    throw new Error(`missing #${id}`);
+  }
+  return element as T;
+}

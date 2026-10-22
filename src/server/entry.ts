@@ -1,46 +1,45 @@
-import connect from "connect";
 import http from "node:http";
-import { WebSocketServer } from "ws";
 import { createServer as createViteServer } from "vite";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
-import { handleWebsocketConnection } from "./netcode.js";
-import { readFileSync } from "node:fs";
+import { WebSocket, WebSocketServer } from "ws";
+import { TICK_MS, WS_PATH } from "../shared/constants.js";
+import { Game } from "./game.js";
+import { GameServer } from "./gameServer.js";
+import { generateWorld } from "./worldGenerator.js";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const port = Number(process.env.PORT ?? 8080);
 
-// create custom vite server in middleware mode
+const { world, spawn } = generateWorld();
+const gameServer = new GameServer(new Game(world, { spawn }));
+setInterval(() => gameServer.tick(), TICK_MS);
+
+// vite serves the client (with HMR) as middleware on our http server
 const vite = await createViteServer({
   server: { middlewareMode: true },
-  appType: "custom",
+  appType: "spa",
 });
+const httpServer = http.createServer((req, res) => vite.middlewares(req, res));
 
-// http server
-const app = connect();
-app.use(vite.middlewares);
-app.use(async (req, res) => {
-  if (req.url !== "/") {
-    res.writeHead(404);
-    res.end();
+// game websocket shares the port, on its own path
+const wss = new WebSocketServer({ noServer: true });
+httpServer.on("upgrade", (req, socket, head) => {
+  if (req.url !== WS_PATH) {
+    socket.destroy();
     return;
   }
-
-  // read index.html
-  let template = readFileSync(
-    resolve(__dirname, "../client/index.html"),
-    "utf-8",
-  );
-
-  // run it through vite
-  template = await vite.transformIndexHtml(req.url, template);
-
-  // send response
-  res.writeHead(200, { "Content-Type": "text/html" });
-  res.end(template);
+  wss.handleUpgrade(req, socket, head, (ws) => {
+    const session = gameServer.connect({
+      send: (data) => {
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(data);
+        }
+      },
+      close: () => ws.close(),
+    });
+    ws.on("message", (data) => session.receive(data.toString()));
+    ws.on("close", () => session.disconnect());
+  });
 });
-const server = http.createServer(app);
-server.listen(8080);
 
-// create websocket server on the same port
-const wss = new WebSocketServer({ server });
-wss.on("connection", handleWebsocketConnection);
+httpServer.listen(port, () => {
+  console.log(`zsh listening on http://localhost:${port}`);
+});

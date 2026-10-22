@@ -1,0 +1,76 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color: #2d2420;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+  background: #bfd1e5;
+}
+
+canvas {
+  display: block;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgb(0 0 0 / 0.35);
+  z-index: 10;
+}
+
+.overlay[hidden] {
+  display: none;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: min(20rem, calc(100vw - 2rem));
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  background: #fff;
+  box-shadow: 0 0.5rem 2rem rgb(0 0 0 / 0.3);
+}
+
+.panel h1 {
+  margin: 0 0 0.5rem;
+}
+
+.panel input,
+.panel button {
+  font: inherit;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.panel input {
+  border: 1px solid #aaa;
+}
+
+.panel button {
+  border: none;
+  background: #3b82f6;
+  color: #fff;
+  cursor: pointer;
+}
+
+.panel button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.error {
+  margin: 0;
+  color: #b91c1c;
+}
+
+.hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #666;
+}

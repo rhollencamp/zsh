@@ -1,9 +1,4 @@
-export const Block = Object.freeze({
-  Air: 0,
-  Grass: 1,
-});
-
-export type BlockId = number;
+import { Block, type BlockId, blockType } from "./blocks.js";
 
 /** Plain-data form of a World, as sent over the wire. */
 export interface WorldData {
@@ -93,7 +88,7 @@ export class World {
     if (!this.inBounds(x, y, z)) {
       return true;
     }
-    return this.blocks[this.index(x, y, z)] !== Block.Air;
+    return blockType(this.blocks[this.index(x, y, z)]).solid;
   }
 
   private index(x: number, y: number, z: number): number {

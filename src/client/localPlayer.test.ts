@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { TICK_SECONDS } from "../shared/constants.js";
 import { type PlayerInput, spawnState, stepPlayer } from "../shared/sim.js";
-import { Block, World } from "../shared/world.js";
+import { Block } from "../shared/blocks.js";
+import { World } from "../shared/world.js";
 import { LocalPlayer } from "./localPlayer.js";
 
 const forward: PlayerInput = { forward: 1, right: 0, yaw: 0 };

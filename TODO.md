@@ -7,12 +7,13 @@
 - ability to place blocks
 - jumping
 - spread out spawn points; players currently spawn on top of each other
+- camera collision: pull the third-person camera in when blocks (e.g. tree canopies) are between it and the player
 
 ## Medium Term
 
 - stamina and running
 - inventory
-- different block shapes and textures
+- different block shapes (textures: add to assets/textures, `npm run atlas`)
 - authenticate players using some means
 - ability to persist world data
 - chunked world, sent as binary instead of a JSON array

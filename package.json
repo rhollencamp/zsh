@@ -9,7 +9,8 @@
     "test:ui": "vitest --ui",
     "typecheck": "tsc -p tsconfig.shared.json && tsc -p tsconfig.server.json && tsc -p tsconfig.client.json && tsc -p tsconfig.test.json",
     "check": "npm run typecheck && vitest run && prettier --check .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "atlas": "tsx tools/buildAtlas.ts"
   },
   "dependencies": {
     "three": "^0.182.0",
@@ -17,9 +18,11 @@
   },
   "devDependencies": {
     "@types/node": "^25.0.9",
+    "@types/pngjs": "^6.0.5",
     "@types/three": "^0.182.0",
     "@types/ws": "^8.18.1",
     "@vitest/ui": "^4.0.17",
+    "pngjs": "^7.0.0",
     "prettier": "^3.5.3",
     "tsx": "^4.7.0",
     "typescript": "~5.9.3",

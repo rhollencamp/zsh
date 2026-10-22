@@ -9,7 +9,8 @@ import {
   stepPlayer,
   wishDirection,
 } from "./sim.js";
-import { Block, World } from "./world.js";
+import { Block } from "./blocks.js";
+import { World } from "./world.js";
 
 function flatWorld(): World {
   const world = new World(10, 6, 10);

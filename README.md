@@ -59,6 +59,14 @@ that state and replays any inputs the server hasn't seen yet. Other
 players are drawn two ticks in the past and interpolated between
 snapshots.
 
-## Attribution
+## Textures
 
-- Textures are from https://faithfulpack.net/
+Block textures live in `assets/textures/`, are packed into
+`public/atlas.png` + `src/client/render/atlas.json` by `npm run atlas`, and
+are assigned to blocks in `src/client/render/blockAppearance.ts`. A test
+fails if the committed atlas is out of date.
+
+## Credits
+
+Textures are from Pixel Perfection by XSSheep and contributors, CC BY-SA
+4.0. See [CREDITS.md](CREDITS.md).

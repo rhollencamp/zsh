@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { Block, World } from "./world.js";
+import { Block } from "./blocks.js";
+import { World } from "./world.js";
 
 describe("World", () => {
   it("stores blocks by coordinate", () => {

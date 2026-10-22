@@ -1,5 +1,6 @@
+import { Block } from "../shared/blocks.js";
 import type { Vec3 } from "../shared/math.js";
-import { Block, World } from "../shared/world.js";
+import { World } from "../shared/world.js";
 
 export interface GeneratedWorld {
   world: World;
@@ -19,17 +20,21 @@ export function generateWorld(
     }
   }
 
+  // patches of ground
+  fill(world, [22, 0, 20], [27, 0, 26], Block.Sand);
+  fill(world, [14, 0, 0], [15, 0, 13], Block.Gravel);
+  fill(world, [2, 0, 26], [5, 0, 29], Block.SnowyGrass);
+
   // a wall
-  for (let x = 4; x < 12; x++) {
-    world.set(x, 1, 4, Block.Grass);
-    world.set(x, 2, 4, Block.Grass);
-  }
+  fill(world, [4, 1, 4], [11, 2, 4], Block.Bricks);
   // a pillar
-  for (let y = 1; y < 5; y++) {
-    world.set(20, y, 10, Block.Grass);
-  }
-  // a single low block
-  world.set(12, 1, 20, Block.Grass);
+  fill(world, [20, 1, 10], [20, 4, 10], Block.Cobblestone);
+  // a few single blocks
+  world.set(12, 1, 20, Block.OakPlanks);
+  world.set(24, 1, 23, Block.Stone);
+  world.set(3, 1, 27, Block.Snow);
+
+  tree(world, 8, 1, 22);
 
   return {
     world,
@@ -39,4 +44,23 @@ export function generateWorld(
       z: Math.floor(sizeZ / 2) + 0.5,
     },
   };
+}
+
+type Cell = [number, number, number];
+
+/** Set every cell in the inclusive box from `a` to `b`. */
+function fill(world: World, a: Cell, b: Cell, block: number): void {
+  for (let x = a[0]; x <= b[0]; x++) {
+    for (let y = a[1]; y <= b[1]; y++) {
+      for (let z = a[2]; z <= b[2]; z++) {
+        world.set(x, y, z, block);
+      }
+    }
+  }
+}
+
+function tree(world: World, x: number, y: number, z: number): void {
+  fill(world, [x - 2, y + 3, z - 2], [x + 2, y + 4, z + 2], Block.OakLeaves);
+  fill(world, [x - 1, y + 5, z - 1], [x + 1, y + 5, z + 1], Block.OakLeaves);
+  fill(world, [x, y, z], [x, y + 4, z], Block.OakLog);
 }

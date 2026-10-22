@@ -74,3 +74,13 @@ canvas {
   font-size: 0.85rem;
   color: #666;
 }
+
+.credits {
+  margin: 0.5rem 0 0;
+  font-size: 0.75rem;
+  color: #888;
+}
+
+.credits a {
+  color: inherit;
+}

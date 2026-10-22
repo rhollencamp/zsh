@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { Block, World } from "../../shared/world.js";
+import { Block } from "../../shared/blocks.js";
+import { World } from "../../shared/world.js";
+import { ATLAS, tileUvs } from "./atlas.js";
 import { buildWorldGeometry } from "./worldMesh.js";
 
 function faceCount(world: World): number {
@@ -33,16 +35,50 @@ describe("buildWorldGeometry", () => {
     expect(geometry.boundingBox!.max.toArray()).toEqual([3, 2, 1]);
   });
 
-  it("uses the top tile only for upward faces", () => {
+  it("textures each face from the block's appearance", () => {
     const world = new World(1, 1, 1);
     world.set(0, 0, 0, Block.Grass);
     const geometry = buildWorldGeometry(world);
     const positions = geometry.getAttribute("position");
     const uvs = geometry.getAttribute("uv");
+    const top = tileUvs(ATLAS, "grass_block_top");
+    const side = tileUvs(ATLAS, "grass_block_side");
     for (let i = 0; i < positions.count; i += 4) {
-      const isTop = [0, 1, 2, 3].every((j) => positions.getY(i + j) === 1);
-      const minV = Math.min(...[0, 1, 2, 3].map((j) => uvs.getY(i + j)));
-      expect(minV).toBe(isTop ? 0.5 : 0);
+      const corners = [0, 1, 2, 3];
+      const isTop = corners.every((j) => positions.getY(i + j) === 1);
+      const isBottom = corners.every((j) => positions.getY(i + j) === 0);
+      if (isBottom) continue;
+      const rect = isTop ? top : side;
+      for (const j of corners) {
+        expect(uvs.getX(i + j)).toBeGreaterThanOrEqual(rect.u0 - 1e-6);
+        expect(uvs.getX(i + j)).toBeLessThanOrEqual(rect.u1 + 1e-6);
+        expect(uvs.getY(i + j)).toBeGreaterThanOrEqual(rect.v0 - 1e-6);
+        expect(uvs.getY(i + j)).toBeLessThanOrEqual(rect.v1 + 1e-6);
+      }
     }
+  });
+
+  it("tints only the faces that ask for it", () => {
+    const world = new World(1, 1, 1);
+    world.set(0, 0, 0, Block.Grass);
+    const geometry = buildWorldGeometry(world);
+    const positions = geometry.getAttribute("position");
+    const colors = geometry.getAttribute("color");
+    for (let i = 0; i < positions.count; i++) {
+      const isTop =
+        positions.getY(i) === 1 && colors.getX(i) !== colors.getY(i);
+      const grey =
+        colors.getX(i) === colors.getY(i) && colors.getY(i) === colors.getZ(i);
+      // the top is tinted green, side and bottom faces are only shaded
+      expect(isTop || grey).toBe(true);
+    }
+  });
+
+  it("draws faces behind see-through blocks", () => {
+    const world = new World(3, 3, 3);
+    world.set(0, 0, 0, Block.Stone);
+    world.set(1, 0, 0, Block.OakLeaves);
+    // the stone keeps its face toward the leaves (6 + 5, not 5 + 5)
+    expect(faceCount(world)).toBe(11);
   });
 });

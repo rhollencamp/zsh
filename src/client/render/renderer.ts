@@ -45,9 +45,13 @@ export class GameRenderer {
     const texture = new TextureLoader().load("/atlas.png");
     texture.colorSpace = SRGBColorSpace;
     texture.magFilter = NearestFilter;
+    // no mipmaps: they would blend neighbouring atlas tiles at a distance
+    texture.minFilter = NearestFilter;
+    texture.generateMipmaps = false;
     this.worldMaterial = new MeshBasicMaterial({
       map: texture,
       vertexColors: true,
+      alphaTest: 0.5, // cut-out textures such as leaves
     });
 
     this.renderer.setPixelRatio(window.devicePixelRatio);

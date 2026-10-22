@@ -10,7 +10,8 @@
     "typecheck": "tsc -p tsconfig.shared.json && tsc -p tsconfig.server.json && tsc -p tsconfig.client.json && tsc -p tsconfig.test.json",
     "check": "npm run typecheck && vitest run && prettier --check .",
     "format": "prettier --write .",
-    "atlas": "tsx tools/buildAtlas.ts"
+    "atlas": "tsx tools/buildAtlas.ts",
+    "texture": "tsx tools/texture.ts"
   },
   "dependencies": {
     "three": "^0.182.0",

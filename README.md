@@ -61,10 +61,9 @@ snapshots.
 
 ## Textures
 
-Block textures live in `assets/textures/`, are packed into
-`public/atlas.png` + `src/client/render/atlas.json` by `npm run atlas`, and
-are assigned to blocks in `src/client/render/blockAppearance.ts`. A test
-fails if the committed atlas is out of date.
+Block textures come from the Pixel Perfection pack. Find and add more with
+`npm run texture -- search|info|add`; see [docs/textures.md](docs/textures.md)
+for the pipeline, licensing rules and what the engine can't draw yet.
 
 ## Credits
 

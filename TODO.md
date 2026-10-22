@@ -13,7 +13,7 @@
 
 - stamina and running
 - inventory
-- different block shapes (textures: add to assets/textures, `npm run atlas`)
+- non-cube block shapes, animated and translucent textures (see docs/textures.md)
 - authenticate players using some means
 - ability to persist world data
 - chunked world, sent as binary instead of a JSON array

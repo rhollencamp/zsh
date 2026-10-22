@@ -1,5 +1,5 @@
-import { readFileSync, readdirSync } from "node:fs";
-import { basename, join } from "node:path";
+import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { basename, dirname, join } from "node:path";
 import { PNG } from "pngjs";
 import type { AtlasManifest } from "../src/client/render/atlas.js";
 
@@ -71,4 +71,13 @@ export function loadTextures(dir: string): Texture[] {
       name: basename(file, ".png"),
       image: PNG.sync.read(readFileSync(join(dir, file))),
     }));
+}
+
+/** Rebuild public/atlas.png and atlas.json from TEXTURE_DIR. */
+export function writeAtlas(): AtlasManifest {
+  const { image, manifest } = buildAtlas(loadTextures(TEXTURE_DIR));
+  mkdirSync(dirname(ATLAS_PNG), { recursive: true });
+  writeFileSync(ATLAS_PNG, PNG.sync.write(image));
+  writeFileSync(ATLAS_JSON, JSON.stringify(manifest, null, 2) + "\n");
+  return manifest;
 }

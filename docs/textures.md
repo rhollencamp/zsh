@@ -74,7 +74,7 @@ The pack is **CC BY-SA 4.0**. Anything derived from it (including
   `content_with_issues.md`; `add` refuses those. When bumping the pinned
   commit, re-check that every vendored file is still clean.
 - Keep `LICENSE.md` next to the textures, and the credits in `CREDITS.md`
-  and on the join screen (`src/client/index.html`).
+  and on the join screen (`src/web/index.html`).
 - Vendored PNGs are unmodified. If you ever edit one, the result is still
   CC BY-SA; say what changed in `assets/textures/pixel-perfection-ce/README.md`.
 - Textures from a different source need their own folder, license file and

@@ -28,7 +28,8 @@ export class GameServer {
   private readonly log: Log;
   private readonly players = new Map<Connection, number>();
 
-  constructor(game: Game, log: Log = console.log) {
+  /** `log` is injected because this runs in node and in the browser. */
+  constructor(game: Game, log: Log) {
     this.game = game;
     this.log = log;
   }

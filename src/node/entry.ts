@@ -2,14 +2,14 @@ import http from "node:http";
 import { createServer as createViteServer } from "vite";
 import { WebSocket, WebSocketServer } from "ws";
 import { TICK_MS, WS_PATH } from "../shared/constants.js";
-import { Game } from "./game.js";
-import { GameServer } from "./gameServer.js";
-import { generateWorld } from "./worldGenerator.js";
+import { Game } from "../server/game.js";
+import { GameServer } from "../server/gameServer.js";
+import { generateWorld } from "../server/worldGenerator.js";
 
 const port = Number(process.env.PORT ?? 8080);
 
 const { world, spawn } = generateWorld();
-const gameServer = new GameServer(new Game(world, { spawn }));
+const gameServer = new GameServer(new Game(world, { spawn }), console.log);
 setInterval(() => gameServer.tick(), TICK_MS);
 
 // vite serves the client (with HMR) as middleware on our http server

@@ -4,11 +4,13 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "dev": "tsx src/server/entry.ts",
+    "dev": "tsx src/node/entry.ts",
+    "build:standalone": "vite build --mode standalone",
+    "preview:standalone": "vite preview --mode standalone --outDir ../../dist/standalone",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "typecheck": "tsc -p tsconfig.shared.json && tsc -p tsconfig.server.json && tsc -p tsconfig.client.json && tsc -p tsconfig.test.json",
-    "check": "npm run typecheck && vitest run && prettier --check .",
+    "typecheck": "tsc -p tsconfig.shared.json && tsc -p tsconfig.node.json && tsc -p tsconfig.client.json && tsc -p tsconfig.test.json",
+    "check": "npm run typecheck && vitest run && prettier --check . && npm run build:standalone",
     "format": "prettier --write .",
     "atlas": "tsx tools/buildAtlas.ts",
     "texture": "tsx tools/texture.ts"

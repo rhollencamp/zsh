@@ -28,8 +28,6 @@ class Client {
       hide: () => {},
     };
     this.app = new App({
-      createSocket: network.createSocket,
-      socketUrl: "ws://test/ws",
       renderer,
       ui,
       input: { intent: () => this.intent },
@@ -58,7 +56,7 @@ beforeEach(() => {
 function addClient(name: string): Client {
   const client = new Client(network);
   clients.push(client);
-  client.app.play(name);
+  client.app.play(name, { createSocket: network.createSocket, url: "test:" });
   return client;
 }
 

@@ -1,8 +1,9 @@
 {
+  "//": "everything that runs in the browser; web/ runs server/ in the page",
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "types": ["vite/client"]
   },
-  "include": ["src/client", "src/shared"]
+  "include": ["src/client", "src/web", "src/server", "src/shared"]
 }

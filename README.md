@@ -27,6 +27,8 @@ Move with WASD or the arrow keys.
 
 The standalone build is plain static files with relative URLs, so it can
 be hosted from any path (GitHub Pages, itch.io, a folder on a web server).
+Every push to `main` publishes it to GitHub Pages via
+`.github/workflows/pages.yml`, after `npm run check` passes.
 Offline worlds are not saved yet, and the game pauses in background tabs
 because browsers throttle timers there.
 

@@ -1,0 +1,8 @@
+{
+  "name": "Pixel Perfection Community Edition",
+  "repository": "https://github.com/Athemis/PixelPerfectionCE",
+  "commit": "28e38cab7c1f03f86364ef704f705bebcc13cb3d",
+  "blockDir": "assets/minecraft/textures/block",
+  "issueList": "content_with_issues.md",
+  "license": "CC BY-SA 4.0"
+}

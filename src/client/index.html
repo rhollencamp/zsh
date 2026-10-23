@@ -1,77 +1,39 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <title>zsh</title>
     <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
-    />
-    <style>
-      body {
-        background-color: #bfd1e5;
-        color: #61443e;
-        margin: 0;
-      }
-
-      a {
-        color: #a06851;
-      }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>zsh</title>
   </head>
-
   <body>
-    <button
-      type="button"
-      class="btn btn-secondary"
-      id="lockButton"
-      style="position: absolute; top: 0; right: 0"
-    >
-      Lock
-    </button>
-
-    <div
-      class="modal fade"
-      id="welcomeModal"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="welcomeModalTitle"
-      aria-hidden="true"
-      data-bs-backdrop="static"
-      data-bs-keyboard="false"
-    >
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="welcomeModalTitle">zsh</h5>
-          </div>
-          <form id="welcomeForm" novalidate>
-            <div class="modal-body">
-              <p>Welcome to zsh</p>
-              <div class="form-group">
-                <label for="welcomeModalPlayerName">Username:</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="welcomeModalPlayerName"
-                  required
-                />
-                <div class="invalid-feedback">Please enter a username.</div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-secondary"
-                id="welcomeModalPlayButton"
-              >
-                Play
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
+    <div id="welcome" class="overlay">
+      <form id="welcome-form" class="panel">
+        <h1>zsh</h1>
+        <label for="player-name">Username</label>
+        <input
+          id="player-name"
+          required
+          maxlength="24"
+          autocomplete="nickname"
+          autofocus
+        />
+        <p id="welcome-error" class="error" hidden></p>
+        <button type="submit" id="play-button">Play</button>
+        <p class="hint">Move with WASD or the arrow keys.</p>
+        <p class="credits">
+          Textures:
+          <a href="https://github.com/Athemis/PixelPerfectionCE" target="_blank"
+            >Pixel Perfection</a
+          >
+          by XSSheep &amp; contributors,
+          <a
+            href="https://creativecommons.org/licenses/by-sa/4.0/"
+            target="_blank"
+            >CC BY-SA 4.0</a
+          >
+        </p>
+      </form>
     </div>
-    <script type="module" src="src/client/entry.js"></script>
+    <script type="module" src="./entry.ts"></script>
   </body>
 </html>

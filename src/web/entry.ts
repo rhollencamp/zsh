@@ -1,7 +1,8 @@
 import { App, type Transport } from "../client/app.js";
-import { KeyboardInput } from "../client/input.js";
+import { KeyboardInput, combineIntents } from "../client/input.js";
 import { socketUrl } from "../client/net.js";
 import { GameRenderer } from "../client/render/renderer.js";
+import { TouchJoystick } from "../client/touchJoystick.js";
 import { type PlayMode, WelcomeScreen } from "../client/ui.js";
 import { WS_PATH } from "../shared/constants.js";
 import { LocalServer } from "./localServer.js";
@@ -24,14 +25,15 @@ function transport(mode: PlayMode): Transport {
   };
 }
 
-const input = new KeyboardInput();
-input.attach(window);
+const keyboard = new KeyboardInput();
+keyboard.attach(window);
+const touch = new TouchJoystick(document.body);
 
 const ui = new WelcomeScreen(document, modes);
 const app = new App({
   renderer: new GameRenderer(document.body),
   ui,
-  input,
+  input: combineIntents([keyboard, touch]),
   now: () => performance.now(),
 });
 ui.onPlay((name, mode) => app.play(name, transport(mode)));

@@ -16,6 +16,30 @@ export interface MoveIntent {
   right: number;
 }
 
+export interface IntentSource {
+  intent(): MoveIntent;
+}
+
+/** Several input devices at once (e.g. keyboard + touch), each axis clamped. */
+export function combineIntents(sources: readonly IntentSource[]): IntentSource {
+  return {
+    intent() {
+      let forward = 0;
+      let right = 0;
+      for (const source of sources) {
+        const intent = source.intent();
+        forward += intent.forward;
+        right += intent.right;
+      }
+      return { forward: clampUnit(forward), right: clampUnit(right) };
+    },
+  };
+}
+
+function clampUnit(value: number): number {
+  return Math.max(-1, Math.min(1, value));
+}
+
 /** Tracks which movement keys are held. */
 export class KeyboardInput {
   private readonly held = new Set<Action>();

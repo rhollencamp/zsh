@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { KeyboardInput } from "./input.js";
+import { KeyboardInput, combineIntents } from "./input.js";
 
 describe("KeyboardInput", () => {
   it("is idle with nothing held", () => {
@@ -36,5 +36,29 @@ describe("KeyboardInput", () => {
     input.keyDown("KeyW");
     input.clear();
     expect(input.intent()).toEqual({ forward: 0, right: 0 });
+  });
+});
+
+describe("combineIntents", () => {
+  const fixed = (forward: number, right: number) => ({
+    intent: () => ({ forward, right }),
+  });
+
+  it("adds sources together", () => {
+    expect(combineIntents([fixed(0.5, 0), fixed(0, -0.25)]).intent()).toEqual({
+      forward: 0.5,
+      right: -0.25,
+    });
+  });
+
+  it("clamps each axis", () => {
+    expect(combineIntents([fixed(1, -1), fixed(1, -1)]).intent()).toEqual({
+      forward: 1,
+      right: -1,
+    });
+  });
+
+  it("is idle with no sources", () => {
+    expect(combineIntents([]).intent()).toEqual({ forward: 0, right: 0 });
   });
 });

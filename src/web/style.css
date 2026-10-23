@@ -7,6 +7,18 @@ body {
   margin: 0;
   overflow: hidden;
   background: #bfd1e5;
+  /* no pull-to-refresh, double-tap zoom, text selection or callouts in game */
+  overscroll-behavior: none;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* the join form still needs normal text input */
+.panel input {
+  -webkit-user-select: text;
+  user-select: text;
 }
 
 canvas {
@@ -97,4 +109,63 @@ canvas {
 
 .credits a {
   color: inherit;
+}
+
+.hint-touch {
+  display: none;
+}
+
+/* the left half of the screen; the right half is left for camera look */
+.joystick-zone {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  touch-action: none;
+}
+
+.joystick-base {
+  display: none;
+  position: absolute;
+  /* resting position: bottom-left, clear of the iPhone home indicator */
+  left: calc(5.5rem + env(safe-area-inset-left));
+  top: calc(100% - 5.5rem - env(safe-area-inset-bottom));
+  width: 120px;
+  height: 120px;
+  margin: -60px 0 0 -60px;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.15);
+  border: 2px solid rgb(255 255 255 / 0.4);
+  pointer-events: none;
+}
+
+.joystick-base.active {
+  display: block;
+  background: rgb(255 255 255 / 0.25);
+}
+
+.joystick-knob {
+  position: absolute;
+  left: 30px;
+  top: 30px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.6);
+}
+
+@media (pointer: coarse) {
+  .hint-keys {
+    display: none;
+  }
+
+  .hint-touch {
+    display: inline;
+  }
+
+  /* show where to put your thumb */
+  .joystick-base {
+    display: block;
+  }
 }

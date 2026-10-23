@@ -2,7 +2,7 @@
 
 ## Short Term
 
-- mouse: orbit the camera (sets `ClientGame.cameraYaw`), select blocks
+- mouse: orbit the camera (sets `ClientGame.cameraYaw`), select blocks; on touch, drag on the right half of the screen (left half is the joystick)
 - ability to destroy blocks
 - ability to place blocks
 - jumping

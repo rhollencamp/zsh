@@ -42,7 +42,9 @@ export class GameRenderer {
     sun.position.set(0.5, 1, 0.3);
     this.scene.add(sun);
 
-    const texture = new TextureLoader().load("/atlas.png");
+    const texture = new TextureLoader().load(
+      `${import.meta.env.BASE_URL}atlas.png`,
+    );
     texture.colorSpace = SRGBColorSpace;
     texture.magFilter = NearestFilter;
     // no mipmaps: they would blend neighbouring atlas tiles at a distance

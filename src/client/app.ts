@@ -17,9 +17,13 @@ export interface AppUi {
   hide(): void;
 }
 
-export interface AppDeps {
+/** How to reach a game server: over the network, or in this page. */
+export interface Transport {
   createSocket: SocketFactory;
-  socketUrl: string;
+  url: string;
+}
+
+export interface AppDeps {
   renderer: AppRenderer;
   ui: AppUi;
   input: { intent(): MoveIntent };
@@ -32,7 +36,7 @@ export interface AppDeps {
  */
 export class App {
   private readonly deps: AppDeps;
-  private readonly net: Netcode;
+  private net: Netcode | null = null;
   private readonly fixedStep = new FixedStep(TICK_MS);
   private game: ClientGame | null = null;
   private name = "";
@@ -40,31 +44,30 @@ export class App {
 
   constructor(deps: AppDeps) {
     this.deps = deps;
-    this.net = new Netcode(deps.createSocket, {
-      onOpen: () =>
-        this.net.send({
-          type: "join",
-          protocol: PROTOCOL_VERSION,
-          name: this.name,
-        }),
-      onMessage: (message) => this.onMessage(message),
-      onClose: () => this.onClose(),
-    });
   }
 
   get inGame(): boolean {
     return this.game !== null;
   }
 
-  play(name: string): void {
+  play(name: string, transport: Transport): void {
+    this.leave();
     this.name = name;
     this.deps.ui.setConnecting();
-    this.net.connect(this.deps.socketUrl);
+    const net = new Netcode(transport.createSocket, {
+      onOpen: () =>
+        net.send({ type: "join", protocol: PROTOCOL_VERSION, name: this.name }),
+      onMessage: (message) => this.onMessage(message),
+      onClose: () => this.onClose(),
+    });
+    this.net = net;
+    net.connect(transport.url);
   }
 
   /** Leave the game on purpose; unlike a dropped connection, shows no error. */
   leave(): void {
-    this.net.disconnect();
+    this.net?.disconnect();
+    this.net = null;
     this.game = null;
   }
 
@@ -78,7 +81,7 @@ export class App {
     this.lastFrame = now;
     const { steps, alpha } = this.fixedStep.advance(elapsed);
     for (let i = 0; i < steps; i++) {
-      this.net.send(game.fixedUpdate(this.deps.input.intent()));
+      this.net?.send(game.fixedUpdate(this.deps.input.intent()));
     }
     this.deps.renderer.render(game.view(now, alpha));
   }
@@ -92,7 +95,7 @@ export class App {
         this.deps.ui.hide();
         break;
       case "rejected":
-        this.net.disconnect();
+        this.leave();
         this.deps.ui.showError(message.reason);
         break;
       case "snapshot":
@@ -103,6 +106,7 @@ export class App {
 
   private onClose(): void {
     const wasInGame = this.game !== null;
+    this.net = null;
     this.game = null;
     this.deps.ui.showError(
       wasInGame

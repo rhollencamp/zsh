@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>zsh</title>
+    <link rel="icon" href="data:," />
   </head>
   <body>
     <div id="welcome" class="overlay">
@@ -18,7 +19,12 @@
           autofocus
         />
         <p id="welcome-error" class="error" hidden></p>
-        <button type="submit" id="play-button">Play</button>
+        <div class="buttons">
+          <button type="submit" data-mode="online">Play online</button>
+          <button type="submit" data-mode="offline" class="secondary">
+            Play offline
+          </button>
+        </div>
         <p class="hint">Move with WASD or the arrow keys.</p>
         <p class="credits">
           Textures:

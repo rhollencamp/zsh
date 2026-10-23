@@ -17,7 +17,9 @@
 - authenticate players using some means
 - ability to persist world data
 - chunked world, sent as binary instead of a JSON array
-- production build: serve `dist/client` instead of the vite middleware
+- production build for online play: node serves a built `dist/web` instead of the vite middleware
+- save offline worlds in the browser (IndexedDB), behind the same interface as server persistence
+- move the offline server into a Web Worker if ticking or world generation starts to stutter rendering
 - smooth out reconciliation corrections instead of snapping
 
 ## Long Term

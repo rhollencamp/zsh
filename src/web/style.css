@@ -59,6 +59,20 @@ canvas {
   cursor: pointer;
 }
 
+.buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.buttons button {
+  flex: 1;
+}
+
+.panel button.secondary {
+  background: #e5e7eb;
+  color: #1f2937;
+}
+
 .panel button:disabled {
   opacity: 0.6;
   cursor: default;

@@ -1,0 +1,9 @@
+{
+  "//": "the node host and build tooling",
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2023"],
+    "types": ["node"]
+  },
+  "include": ["src/node", "src/server", "src/shared", "tools", "*.config.ts"]
+}
